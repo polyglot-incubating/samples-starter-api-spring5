@@ -1,0 +1,73 @@
+buildscript {
+	ext {
+		springBootVersion = '2.0.0.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+group = 'org.chiwooplatform.samples.api'
+version = '1.0.0-SNAPSHOT'
+project.buildDir = 'target'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+compileJava.options.encoding = 'UTF-8'
+
+
+repositories {
+	mavenCentral()
+}
+
+
+dependencies {
+	compile('org.springframework.boot:spring-boot-starter-actuator')
+	compile('org.springframework.boot:spring-boot-starter-aop')
+	compile('org.springframework.boot:spring-boot-starter-web'){
+        exclude module: 'hibernate-validator'
+	}
+    compile('org.springframework.boot:spring-boot-starter-data-jpa')
+    compile('mysql:mysql-connector-java:6.0.5')
+	compileOnly('org.projectlombok:lombok')
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
+        
+configurations {
+    all*.exclude module : 'spring-boot-starter-logging'
+}
+
+task printProps() {
+    doLast {
+        println '\n ------------------------------------'
+        println envProjectProp
+        println System.properties['system']
+        println  "${System.env['JAVA_HOME']}"
+        println '\n ------------------------------------'
+    }
+}
+
+task showCommands() {
+    doLast {
+        println 'gradlew clean build'
+        println 'gradlew jar'
+        println 'gradlew build && java -jar build/libs/samples-starter-api-spring5-${project.version}.jar ' +  '$version'
+        println 'gradlew dependencies --configuration runtimeOnly'
+        println 'gradlew dependencies --configuration implementation'
+        println 'gradlew default:dependencies --configuration compileClasspath'
+        println 'gradlew dependencyInsight --dependency slf4j-api'
+        println 'gradlew dependencyInsight --dependency slf4j-api --configuration compileClasspath'
+    }
+}
+
+tasks.eclipse.dependsOn printProps
+tasks.eclipse.dependsOn showCommands
+
